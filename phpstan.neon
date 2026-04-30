@@ -1,0 +1,19 @@
+includes:
+    - vendor/larastan/larastan/extension.neon
+
+parameters:
+    level: 8
+    paths:
+        - app
+
+    reportUnmatchedIgnoredErrors: false
+
+    ignoreErrors:
+        # Falsos positivos conhecidos do skeleton Laravel
+        - '#Call to an undefined method Illuminate\\.*#'
+        - '#Access to an undefined property Illuminate\\.*#'
+
+    excludePaths:
+        - vendor
+        - storage
+        - bootstrap/cache
