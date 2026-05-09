@@ -32,11 +32,12 @@ services:
         environment:
             PGPASSWORD: '${DB_PASSWORD:-secret}'
             POSTGRES_DB: '${DB_DATABASE}'
-            POSTGRES_USER: '${DB_USERNAME}'
+            POSTGRES_USER: '${DB_SUPERUSER:-sail}'
             POSTGRES_PASSWORD: '${DB_PASSWORD:-secret}'
         volumes:
             - 'sail-pgsql:/var/lib/postgresql'
             - './vendor/laravel/sail/database/pgsql/create-testing-database.sql:/docker-entrypoint-initdb.d/10-create-testing-database.sql'
+            - './docker/postgres/20-create-roles.sh:/docker-entrypoint-initdb.d/20-create-roles.sh'
         networks:
             - sail
         healthcheck:
@@ -47,7 +48,7 @@ services:
                 - '-d'
                 - '${DB_DATABASE}'
                 - '-U'
-                - '${DB_USERNAME}'
+                - '${DB_SUPERUSER:-sail}'
             retries: 3
             timeout: 5s
     redis:
