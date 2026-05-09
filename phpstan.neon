@@ -13,6 +13,10 @@ parameters:
         - '#Call to an undefined method Illuminate\\.*#'
         - '#Access to an undefined property Illuminate\\.*#'
 
+        # spatie/laravel-data — classe não encontrada antes de composer install.
+        # Remover esta entrada após rodar: sail composer install
+        - '#Class Spatie\\LaravelData\\Data#'
+
     excludePaths:
         - vendor
         - storage
