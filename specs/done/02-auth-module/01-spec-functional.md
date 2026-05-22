@@ -1,7 +1,7 @@
 # Spec Funcional: Módulo de Autenticação
 **Versão:** 1.1
-**Status:** implemented
-**Discovery:** specs/wip/02-auth-module/discovery.md
+**Status:** done
+**Discovery:** specs/done/02-auth-module/discovery.md
 
 ## Contexto
 
@@ -268,3 +268,25 @@ E redireciona para a vitrine com estado autenticado
 - Todos os 12 critérios de aceite verificados via suíte Pest (97 testes verdes) e Larastan nível 8 limpo.
 - Frontend implementado em Inertia.js + React + TypeScript com React Hook Form + Zod e Tanstack Query (provider registrado).
 - Cookie `Secure` do refresh_token passa a ser condicional ao ambiente (`app()->environment('production')`) para permitir dev local em HTTP sem perder a proteção em produção.
+
+## Como foi implementado
+
+**Camadas entregues:**
+- Backend: 9 endpoints HTTP no contexto do tenant (login, logout, refresh, forgot/reset password, change password, register cliente, invite admin, invite accept), 4 Services (`TokenService`, `LoginService`, `PasswordService`, `InviteService`), 4 Eventos + 2 Listeners queued, 5 Notifications PT-BR, 1 Job diário (`CleanupExpiredTokens`), 6 Exceptions tipadas, Middleware `AuthenticateJWT` + ajuste em `SetTenantContext` para JWT, Rule `StrongPassword`.
+- Frontend: Inertia + React 18 + TS strict, com 5 páginas (Login, ForgotPassword, ResetPassword, Register, AcceptInvite), `AuthLayout`, 3 componentes de form (`TextField`, `SubmitButton`, `FormError`), `lib/axios.ts` com interceptor 401 + single-flight refresh queue, hook `useAuth`.
+- Infra Inertia plumada (não existia): `inertia-laravel` composer + `HandleInertiaRequests` middleware no web group + `app.blade.php` root + `app.tsx` montando `createInertiaApp` + `QueryClientProvider`.
+
+**Desvios da spec original (v1.0 → v1.1, ver Changelog):**
+- `phone` adiado no register (depende de `user_profiles`, ADR-003 — sem breaking change no contrato HTTP).
+- `name` removido do request de convite (corretor define no aceite).
+- `first_access` purpose não foi necessário (fluxos atuais não distinguem primeiro acesso).
+- Cookie `Secure` env-conditional (em vez de sempre `true`) para suportar dev local em HTTP.
+- `AcceptInviteController` separado do `InviteController` (envio é admin-only, aceite é público com token).
+- Notifications queued via Mailpit em dev (Resend em prod cobre quando ADR-005 for plumada na infra de produção).
+
+**Bugs corrigidos durante a implementação (documentados na spec técnica v1.1):**
+- `RefreshToken::$fillable` precisou incluir `revoked` + `revoked_at` — sem isso `$stored->update()` silenciosamente falhava, vazando sessões revogadas (bug crítico).
+- `TenantService` cache armazenava o model Eloquent direto; Laravel 13 default `cache.serializable_classes => false` rejeita deserialize de qualquer classe. Refatorado para guardar atributos e hidratar via `setRawAttributes`.
+- `.env` local apontava `DB_USERNAME=sail` em vez de `acho_app`. Migrations precisam de `--database=pgsql_migrator` (BYPASSRLS + privilégio CREATE) — `Makefile` atualizado.
+
+**Cobertura final:** 97 testes Pest (236 asserts) · Larastan 0 erros · TypeScript 0 erros · Vite build OK.

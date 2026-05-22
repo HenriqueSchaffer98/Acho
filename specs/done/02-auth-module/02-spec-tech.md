@@ -1,7 +1,7 @@
 # Spec Técnica: Módulo de Autenticação
 **Versão:** 1.1
-**Status:** implemented
-**Spec funcional:** specs/wip/02-auth-module/01-spec-functional.md
+**Status:** done
+**Spec funcional:** specs/done/02-auth-module/01-spec-functional.md
 
 ## Decisões de Arquitetura
 
