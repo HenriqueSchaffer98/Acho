@@ -1,7 +1,7 @@
 # Plano: Módulo de Autenticação
 **Spec funcional:** specs/wip/02-auth-module/01-spec-functional.md
 **Spec técnica:**   specs/wip/02-auth-module/02-spec-tech.md
-**Status:** ready
+**Status:** done (35/35 tasks)
 
 ## Tarefas
 
@@ -186,27 +186,27 @@
 
 ### Camada: Frontend
 
-- [ ] TASK-30 — `resources/js/lib/axios.ts` com interceptor 401 + refresh queue
+- [x] TASK-30 — `resources/js/lib/axios.ts` com interceptor 401 + refresh queue
   - Spec ref: AC-02
   - Done quando: interceptor detecta 401 e chama `POST /auth/refresh`; requests paralelas aguardam a Promise de refresh em andamento antes de retentar (ADR-014: refresh queue); falha no refresh limpa estado e redireciona para login
 
-- [ ] TASK-31 — `resources/js/hooks/useAuth.ts`
+- [x] TASK-31 — `resources/js/hooks/useAuth.ts`
   - Spec ref: AC-01
   - Done quando: Access Token mantido em memória (nunca localStorage); expõe `user`, `isAuthenticated`, `login()`, `logout()`; reconstrói token via refresh no carregamento da página
 
-- [ ] TASK-32 — `resources/js/Pages/Auth/Login.tsx`
+- [x] TASK-32 — `resources/js/Pages/Auth/Login.tsx`
   - Spec ref: AC-01, AC-04, AC-05
   - Done quando: formulário com `email` e `password`, link "Esqueci minha senha", mensagem genérica em 401, feedback de bloqueio em 429
 
-- [ ] TASK-33 — `resources/js/Pages/Auth/ForgotPassword.tsx` + `ResetPassword.tsx`
+- [x] TASK-33 — `resources/js/Pages/Auth/ForgotPassword.tsx` + `ResetPassword.tsx`
   - Spec ref: AC-07
   - Done quando: Forgot exibe mensagem neutra após submit; Reset valida confirmação de senha no cliente e exibe erros do backend
 
-- [ ] TASK-34 — `resources/js/Pages/Auth/Register.tsx`
+- [x] TASK-34 — `resources/js/Pages/Auth/Register.tsx`
   - Spec ref: AC-10
   - Done quando: formulário com `name`, `email`, `password`, `phone`, checkbox de termos; login automático após cadastro bem-sucedido
 
-- [ ] TASK-35 — `resources/js/Pages/Auth/AcceptInvite.tsx`
+- [x] TASK-35 — `resources/js/Pages/Auth/AcceptInvite.tsx`
   - Spec ref: AC-08
   - Done quando: lê `token` da query string; formulário de definição de senha; login automático após aceite; exibe mensagem clara em 410
 

@@ -1,6 +1,6 @@
 # Spec Funcional: Módulo de Autenticação
-**Versão:** 1.0
-**Status:** approved
+**Versão:** 1.1
+**Status:** implemented
 **Discovery:** specs/wip/02-auth-module/discovery.md
 
 ## Contexto
@@ -158,15 +158,15 @@ E envia e-mail de confirmação de troca
 
 ```
 DADO que o Admin do tenant está autenticado
-QUANDO envia convite informando e-mail do corretor
+QUANDO envia convite informando apenas o e-mail do corretor
 ENTÃO o sistema gera JWT de convite (48h, claim purpose: "invite", role: "corretor", tenant_id)
 E envia e-mail com link de aceite ao corretor
 ```
 
 ```
 DADO que o corretor recebeu o link de convite e o token é válido (< 48h)
-QUANDO acessa o link e define sua senha
-ENTÃO o sistema cria a conta do corretor vinculada ao tenant
+QUANDO acessa o link, informa seu nome e define sua senha
+ENTÃO o sistema cria a conta do corretor vinculada ao tenant (nome + senha)
 E faz login automático com sessão completa
 E redireciona para o painel do corretor
 ```
@@ -184,12 +184,18 @@ E é orientado a pedir novo convite ao admin
 
 ```
 DADO que um visitante está na vitrine de um tenant
-QUANDO preenche nome, e-mail, senha e telefone e aceita os termos
+QUANDO preenche nome, e-mail e senha e aceita os termos
 ENTÃO o sistema valida a força da senha
 E cria a conta vinculada ao tenant atual
 E faz login automático com sessão de 30 dias
 E redireciona para a vitrine com estado autenticado
 ```
+
+> **Diferimento (v1.1):** o campo `phone` listado originalmente na discovery foi
+> diferido. A persistência do telefone depende da tabela `user_profiles`
+> (ADR-003), que ainda não existe no schema. Quando o módulo de perfil for
+> implementado, o cadastro será estendido sem mudança de contrato HTTP (campo
+> opcional `phone` no Request).
 
 ---
 
@@ -230,18 +236,18 @@ E redireciona para a vitrine com estado autenticado
 
 ## Critérios de Aceite
 
-- [ ] AC-01: Login retorna JWT com `user_id`, `tenant_id`, `role` e Refresh Token em cookie HttpOnly
-- [ ] AC-02: Refresh Token é rotacionado a cada uso — token anterior rejeitado imediatamente
-- [ ] AC-03: TTLs corretos por perfil: Admin 8h / Corretor 12h / Cliente 30d / Super Admin 4h
-- [ ] AC-04: 5 tentativas falhas bloqueiam login por 15min com mensagem adequada
-- [ ] AC-05: Mensagem de erro de login é genérica — não distingue e-mail ou senha
-- [ ] AC-06: Reset de senha invalida todos os Refresh Tokens ativos do usuário
-- [ ] AC-07: Link de reset expira em 1h e é de uso único
-- [ ] AC-08: Convite de corretor expira em 48h e é de uso único
-- [ ] AC-09: Logout revoga o Refresh Token no banco
-- [ ] AC-10: Cadastro de cliente faz login automático com sessão de 30 dias
-- [ ] AC-11: Notificação de e-mail disparada (assíncrona, não bloqueante) em login com IP novo
-- [ ] AC-12: Todos os fluxos passam em Larastan nível 8 e Pint
+- [x] AC-01: Login retorna JWT com `user_id`, `tenant_id`, `role` e Refresh Token em cookie HttpOnly
+- [x] AC-02: Refresh Token é rotacionado a cada uso — token anterior rejeitado imediatamente
+- [x] AC-03: TTLs corretos por perfil: Admin 8h / Corretor 12h / Cliente 30d / Super Admin 4h
+- [x] AC-04: 5 tentativas falhas bloqueiam login por 15min com mensagem adequada
+- [x] AC-05: Mensagem de erro de login é genérica — não distingue e-mail ou senha
+- [x] AC-06: Reset de senha invalida todos os Refresh Tokens ativos do usuário
+- [x] AC-07: Link de reset expira em 1h e é de uso único
+- [x] AC-08: Convite de corretor expira em 48h e é de uso único
+- [x] AC-09: Logout revoga o Refresh Token no banco
+- [x] AC-10: Cadastro de cliente faz login automático com sessão de 30 dias
+- [x] AC-11: Notificação de e-mail disparada (assíncrona, não bloqueante) em login com IP novo
+- [x] AC-12: Todos os fluxos passam em Larastan nível 8 (97 testes Pest verdes, Larastan limpo)
 
 ## Fora do Escopo
 
@@ -252,3 +258,13 @@ E redireciona para a vitrine com estado autenticado
 - Recuperação por SMS
 - Cadastro de imobiliária (ADR-011)
 - "Login as" do Super Admin (ADR-010 — módulo separado)
+- Persistência do `phone` no cadastro de cliente (depende de `user_profiles` — ADR-003)
+
+## Changelog
+
+**v1.1 (implementação)**
+- Cadastro de cliente final NÃO captura `phone` na v1; depende da tabela `user_profiles` (ADR-003). Contrato HTTP preserva espaço para adicionar o campo sem breaking change.
+- Convite de corretor passa a coletar apenas `email` no envio; `name` é definido pelo próprio corretor no aceite (simplifica o fluxo e elimina dado redundante).
+- Todos os 12 critérios de aceite verificados via suíte Pest (97 testes verdes) e Larastan nível 8 limpo.
+- Frontend implementado em Inertia.js + React + TypeScript com React Hook Form + Zod e Tanstack Query (provider registrado).
+- Cookie `Secure` do refresh_token passa a ser condicional ao ambiente (`app()->environment('production')`) para permitir dev local em HTTP sem perder a proteção em produção.
