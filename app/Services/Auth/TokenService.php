@@ -46,7 +46,7 @@ class TokenService
      * Generates a JWT with a fully custom payload — used for invite tokens
      * where the recipient does NOT yet exist as a User. Adds iat/exp.
      *
-     * @param array<string, mixed> $payload
+     * @param  array<string, mixed>  $payload
      */
     public function generateAnonymousToken(array $payload, int $ttlSeconds): string
     {

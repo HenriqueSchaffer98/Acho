@@ -9,6 +9,7 @@ use App\Models\RefreshToken;
 use App\Models\Tenant;
 use App\Models\User;
 use App\Services\Auth\TokenService;
+use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(RefreshDatabase::class);
@@ -84,7 +85,7 @@ it('leaves the table untouched when no tokens are expired', function () {
 });
 
 it('is registered to run daily on the scheduler', function () {
-    $schedule = app(\Illuminate\Console\Scheduling\Schedule::class);
+    $schedule = app(Schedule::class);
 
     $hasJob = collect($schedule->events())
         ->contains(fn ($event) => str_contains($event->description ?? '', 'CleanupExpiredTokens')

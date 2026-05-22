@@ -112,7 +112,7 @@ class PasswordService
     public function change(User $user, Tenant $tenant, string $currentPassword, string $newPassword, string $ip, ?string $currentRefreshToken = null): void
     {
         if (! Hash::check($currentPassword, $user->password)) {
-            throw new InvalidCredentialsException();
+            throw new InvalidCredentialsException;
         }
 
         $user->forceFill([

@@ -37,7 +37,7 @@ class InviteService
             ->exists();
 
         if ($existing) {
-            throw new EmailAlreadyRegisteredException();
+            throw new EmailAlreadyRegisteredException;
         }
 
         $token = $this->tokenService->generateAnonymousToken([
@@ -62,8 +62,8 @@ class InviteService
      * @return array{access_token: string, refresh_token: string, user: User}
      *
      * @throws InvalidTokenException when the token is invalid, expired, has
-     *                                the wrong purpose, or the e-mail is
-     *                                already taken
+     *                               the wrong purpose, or the e-mail is
+     *                               already taken
      */
     public function accept(AcceptInviteData $data, Tenant $tenant, string $ip, ?string $userAgent): array
     {

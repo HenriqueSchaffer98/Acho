@@ -6,6 +6,4 @@ namespace App\Exceptions\Auth;
 
 use RuntimeException;
 
-class TokenReplayException extends RuntimeException
-{
-}
+class TokenReplayException extends RuntimeException {}

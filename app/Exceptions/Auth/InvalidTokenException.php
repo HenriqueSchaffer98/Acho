@@ -6,6 +6,4 @@ namespace App\Exceptions\Auth;
 
 use RuntimeException;
 
-class InvalidTokenException extends RuntimeException
-{
-}
+class InvalidTokenException extends RuntimeException {}

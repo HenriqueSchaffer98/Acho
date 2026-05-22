@@ -6,6 +6,4 @@ namespace App\Exceptions\Auth;
 
 use RuntimeException;
 
-class MissingPepperException extends RuntimeException
-{
-}
+class MissingPepperException extends RuntimeException {}

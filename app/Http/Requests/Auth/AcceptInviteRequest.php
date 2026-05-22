@@ -20,7 +20,7 @@ class AcceptInviteRequest extends FormRequest
         return [
             'token' => ['required', 'string'],
             'name' => ['required', 'string', 'max:120'],
-            'password' => ['required', 'confirmed', new StrongPassword()],
+            'password' => ['required', 'confirmed', new StrongPassword],
         ];
     }
 }

@@ -29,7 +29,7 @@ class RegisterRequest extends FormRequest
                 'email',
                 Rule::unique('users', 'email')->where('tenant_id', $tenant->id)->whereNull('deleted_at'),
             ],
-            'password' => ['required', 'confirmed', new StrongPassword()],
+            'password' => ['required', 'confirmed', new StrongPassword],
             'terms' => ['required', 'accepted'],
         ];
     }

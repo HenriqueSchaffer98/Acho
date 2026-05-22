@@ -40,7 +40,7 @@ class LoginService
 
         if ($user === null || ! Hash::check($data->password, $user->password)) {
             RateLimiter::hit($key, self::DECAY_SECONDS);
-            throw new InvalidCredentialsException();
+            throw new InvalidCredentialsException;
         }
 
         RateLimiter::clear($key);
