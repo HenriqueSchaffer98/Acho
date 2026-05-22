@@ -5,5 +5,11 @@
     "trailingComma": "all",
     "printWidth": 120,
     "bracketSpacing": true,
-    "arrowParens": "always"
+    "arrowParens": "always",
+    "overrides": [
+        {
+            "files": ["*.yml", "*.yaml"],
+            "options": { "tabWidth": 2 }
+        }
+    ]
 }

@@ -7,3 +7,4 @@ storage/
 *.md
 composer.json
 package-lock.json
+compose.yaml
