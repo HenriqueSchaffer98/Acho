@@ -4,7 +4,7 @@ SAIL = ./vendor/bin/sail
 export WWWUSER ?= $(shell id -u)
 export WWWGROUP ?= $(shell id -g)
 
-.PHONY: up down fresh test lint analyze
+.PHONY: up down migrate fresh test lint analyze
 
 up: ## Sobe os containers em background (Sail)
 	$(SAIL) up -d
@@ -12,8 +12,11 @@ up: ## Sobe os containers em background (Sail)
 down: ## Para os containers
 	$(SAIL) down
 
-fresh: ## Reset completo do banco + executa seeders
-	$(SAIL) artisan migrate:fresh --seed
+migrate: ## Roda migrations pendentes (via role acho_migrator)
+	$(SAIL) artisan migrate --database=pgsql_migrator
+
+fresh: ## Reset completo do banco + executa seeders (via role acho_migrator)
+	$(SAIL) artisan migrate:fresh --seed --database=pgsql_migrator
 
 test: ## Roda a suíte de testes (Pest)
 	$(SAIL) artisan test

@@ -2,6 +2,8 @@
 
 use App\Exceptions\TenantNotFoundException;
 use App\Exceptions\TenantSuspendedException;
+use App\Http\Middleware\AuthenticateJWT;
+use App\Http\Middleware\HandleInertiaRequests;
 use App\Http\Middleware\SetTenantContext;
 use App\Http\Middleware\TenantResolver;
 use Illuminate\Foundation\Application;
@@ -20,9 +22,14 @@ return Application::configure(basePath: dirname(__DIR__))
         },
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        $middleware->web(append: [
+            HandleInertiaRequests::class,
+        ]);
+
         $middleware->alias([
             'tenant.resolve' => TenantResolver::class,
             'tenant.context' => SetTenantContext::class,
+            'auth.jwt' => AuthenticateJWT::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

@@ -4,14 +4,7 @@ import tsPlugin from '@typescript-eslint/eslint-plugin';
 /** @type {import('eslint').Linter.Config[]} */
 export default [
     {
-        ignores: [
-            'vendor/**',
-            'node_modules/**',
-            'public/build/**',
-            'bootstrap/ssr/**',
-            '*.config.js',
-            '*.config.ts',
-        ],
+        ignores: ['vendor/**', 'node_modules/**', 'public/build/**', 'bootstrap/ssr/**', '*.config.js', '*.config.ts'],
     },
     {
         files: ['resources/js/**/*.{ts,tsx}'],

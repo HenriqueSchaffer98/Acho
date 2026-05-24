@@ -4,5 +4,7 @@ public/build/
 bootstrap/ssr/
 storage/
 *.lock
+*.md
 composer.json
 package-lock.json
+compose.yaml

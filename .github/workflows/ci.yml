@@ -11,10 +11,6 @@ jobs:
     name: Lint, Analyze & Test
     runs-on: ubuntu-latest
 
-    container:
-      image: laravelsail/php83-composer:latest
-      options: --user root
-
     services:
       postgres:
         image: postgres:16
@@ -22,6 +18,8 @@ jobs:
           POSTGRES_DB: testing
           POSTGRES_USER: sail
           POSTGRES_PASSWORD: password
+        ports:
+          - 5432:5432
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
@@ -30,15 +28,28 @@ jobs:
 
       redis:
         image: redis:alpine
+        ports:
+          - 6379:6379
         options: >-
           --health-cmd "redis-cli ping"
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
 
+    env:
+      APP_PEPPER: ci-fixed-pepper-not-a-secret-only-for-pipeline-runs-0123456789abcdef
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: pdo, pdo_pgsql, pgsql, redis, bcmath, intl, mbstring, gd, zip, fileinfo, openssl, tokenizer, xml, ctype, json
+          coverage: none
+          tools: composer:v2
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -60,15 +71,15 @@ jobs:
           cp .env.example .env
           php artisan key:generate
 
-      - name: Run migrations
+      - name: Create Postgres roles (acho_app, acho_migrator)
         env:
-          DB_CONNECTION: pgsql
-          DB_HOST: postgres
-          DB_PORT: 5432
-          DB_DATABASE: testing
-          DB_USERNAME: sail
-          DB_PASSWORD: password
-        run: php artisan migrate --force
+          POSTGRES_USER: sail
+          POSTGRES_DB: testing
+          POSTGRES_PASSWORD: password
+          PGPASSWORD: password
+          PGHOST: 127.0.0.1
+          PGPORT: 5432
+        run: bash docker/postgres/20-create-roles.sh
 
       - name: PHP — Pint (code style)
         run: ./vendor/bin/pint --test
@@ -91,11 +102,10 @@ jobs:
       - name: PHP — Pest (tests)
         env:
           DB_CONNECTION: pgsql
-          DB_HOST: postgres
+          DB_HOST: 127.0.0.1
           DB_PORT: 5432
           DB_DATABASE: testing
-          DB_USERNAME: sail
           DB_PASSWORD: password
-          REDIS_HOST: redis
+          REDIS_HOST: 127.0.0.1
           REDIS_PORT: 6379
         run: php artisan test

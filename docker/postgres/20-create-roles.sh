@@ -50,7 +50,7 @@ SQL
 # we also check for the "<db>_testing" pattern as a fallback.
 grant_on_db() {
     local db="$1"
-    DB_EXISTS=$(psql -U "$POSTGRES_USER" -tAc "SELECT 1 FROM pg_database WHERE datname='${db}'" 2>/dev/null || echo "")
+    DB_EXISTS=$(psql -U "$POSTGRES_USER" -d "$POSTGRES_DB" -tAc "SELECT 1 FROM pg_database WHERE datname='${db}'" 2>/dev/null || echo "")
     if [ "$DB_EXISTS" = "1" ]; then
         psql -v ON_ERROR_STOP=1 -U "$POSTGRES_USER" -d "$db" <<-SQL
             GRANT ALL PRIVILEGES ON DATABASE "${db}" TO acho_migrator;
@@ -58,6 +58,11 @@ grant_on_db() {
 
             GRANT CREATE, USAGE ON SCHEMA public TO acho_migrator;
             GRANT USAGE ON SCHEMA public TO acho_app;
+
+            -- Testing-only: allow acho_app to CREATE in public so RefreshDatabase
+            -- (Pest/PHPUnit) can run migrate:fresh as acho_app. Scoped to test DBs
+            -- via grant_on_db; production retains the least-privilege baseline.
+            GRANT CREATE ON SCHEMA public TO acho_app;
 
             -- Default privileges: tables created by acho_migrator are accessible by acho_app.
             ALTER DEFAULT PRIVILEGES FOR ROLE acho_migrator IN SCHEMA public

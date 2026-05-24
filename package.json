@@ -26,8 +26,13 @@
         "vite": "^8.0.0"
     },
     "dependencies": {
+        "@hookform/resolvers": "^5.4.0",
         "@inertiajs/react": "^2.0.0",
+        "@tanstack/react-query": "^5.100.11",
+        "axios": "^1.16.1",
         "react": "^18.0.0",
-        "react-dom": "^18.0.0"
+        "react-dom": "^18.0.0",
+        "react-hook-form": "^7.76.0",
+        "zod": "^4.4.3"
     }
 }
