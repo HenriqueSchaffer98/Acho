@@ -59,6 +59,11 @@ grant_on_db() {
             GRANT CREATE, USAGE ON SCHEMA public TO acho_migrator;
             GRANT USAGE ON SCHEMA public TO acho_app;
 
+            -- Testing-only: allow acho_app to CREATE in public so RefreshDatabase
+            -- (Pest/PHPUnit) can run migrate:fresh as acho_app. Scoped to test DBs
+            -- via grant_on_db; production retains the least-privilege baseline.
+            GRANT CREATE ON SCHEMA public TO acho_app;
+
             -- Default privileges: tables created by acho_migrator are accessible by acho_app.
             ALTER DEFAULT PRIVILEGES FOR ROLE acho_migrator IN SCHEMA public
                 GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO acho_app;

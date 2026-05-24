@@ -81,16 +81,6 @@ jobs:
           PGPORT: 5432
         run: bash docker/postgres/20-create-roles.sh
 
-      - name: Run migrations
-        env:
-          DB_CONNECTION: pgsql
-          DB_HOST: 127.0.0.1
-          DB_PORT: 5432
-          DB_DATABASE: testing
-          DB_USERNAME: acho_migrator
-          DB_PASSWORD: password
-        run: php artisan migrate --force
-
       - name: PHP — Pint (code style)
         run: ./vendor/bin/pint --test
 
