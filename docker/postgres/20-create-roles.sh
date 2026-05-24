@@ -50,7 +50,7 @@ SQL
 # we also check for the "<db>_testing" pattern as a fallback.
 grant_on_db() {
     local db="$1"
-    DB_EXISTS=$(psql -U "$POSTGRES_USER" -tAc "SELECT 1 FROM pg_database WHERE datname='${db}'" 2>/dev/null || echo "")
+    DB_EXISTS=$(psql -U "$POSTGRES_USER" -d "$POSTGRES_DB" -tAc "SELECT 1 FROM pg_database WHERE datname='${db}'" 2>/dev/null || echo "")
     if [ "$DB_EXISTS" = "1" ]; then
         psql -v ON_ERROR_STOP=1 -U "$POSTGRES_USER" -d "$db" <<-SQL
             GRANT ALL PRIVILEGES ON DATABASE "${db}" TO acho_migrator;
